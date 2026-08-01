@@ -1,0 +1,46 @@
+[data]
+chezmoi_profile = "default"
+sources_codes_directory = "${HOME}/.sources_codes"
+programs_directory = "${HOME}/.local"
+configuration_directory = "${HOME}/.config"
+shell = "zsh"
+os_user_profile_path = "${HOME}/.zsh_profile"
+special = false
+
+[data.c_cpp]
+enable = true
+development = true
+
+[data.rust]
+enable = true
+cargo_home = "${HOME}/.local/cargo"
+rustup_home = "${HOME}/.local/rustup"
+
+[data.python]
+enable = true
+
+[data.python.pyenv]
+enable = true
+program_directory = "${HOME}/.local/pyenv"
+
+[data.python.uv]
+enable = true
+
+[data.gitconfig]
+email = "serebraykov.vs@gmail.com"
+name = "Omnivanitate"
+
+[data.gitconfig.credential]
+helper = "cache"
+
+[data.zsh]
+enable = true
+
+[data.tmux]
+enable = true
+
+[data.neovim]
+enable = true
+version = "0.12.0"
+config_repo = "https://github.com/Omnivanitate/neovimrc.git"
+config_folder = "${HOME}/.config/nvim"
