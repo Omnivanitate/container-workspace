@@ -44,3 +44,8 @@ enable = true
 version = "0.12.0"
 config_repo = "https://github.com/Omnivanitate/neovimrc.git"
 config_folder = "${HOME}/.config/nvim"
+
+[data.ai]
+enable = true
+opencode_home = "${HOME}/.local/opencode"
+
