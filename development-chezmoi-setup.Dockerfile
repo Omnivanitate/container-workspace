@@ -3,19 +3,18 @@
 ARG BASE_IMAGE=debian:trixie
 FROM ${BASE_IMAGE}
 
+ARG UID=1000
+ARG USER_GID=1000
+ARG USERNAME=devuser
+
+ARG LOCAL_CHEZMOI_CONFIG="./default_chezmoi.toml"
 ARG GITHUB_USER="Omnivanitate"
 ARG DOTFILES_REPO=""
 ARG CHEZMOI_PROFILE="default"
 
-ARG UID=1000
-ARG USER_GID=1000
-ARG LOCAL_CHEZMOI_CONFIG="./default_chezmoi.toml"
-ARG USERNAME=devuser
-
-ENV HOME=/home/${USERNAME}
+ARG HOME=/home/${USERNAME}
 ENV PROGRAMS_DIR=${HOME}/.local
 ENV CHEZMOI_PROGRAM_PATH=${PROGRAMS_DIR}/bin
-ENV USER=${USERNAME}
 
 SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
@@ -31,9 +30,10 @@ RUN groupadd --gid ${USER_GID} ${USERNAME} \
         --create-home \
         --shell /bin/bash \
             ${USERNAME} \
-    && usermod -aG sudo ${USERNAME} \
-    && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    && usermod -aG sudo ${USERNAME}
 
+RUN echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME} \
+    && chmod 0440 /etc/sudoers.d/${USERNAME}
 
 USER ${USERNAME}
 
@@ -49,18 +49,16 @@ RUN curl -fsLS https://get.chezmoi.io \
     && test -x "${CHEZMOI_PROGRAM_PATH}/chezmoi" \
     && "${CHEZMOI_PROGRAM_PATH}/chezmoi" --version
 
-
 ENV PATH="${PROGRAMS_DIR}/bin:${PATH}"
 
 RUN if [ -n "${DOTFILES_REPO}" ]; then \
-        CHEZMOI_PROFILE="${CHEZMOI_PROFILE}" \
         chezmoi init --recurse-submodules=false --apply "${DOTFILES_REPO}"; \
     elif [ -n "${GITHUB_USER}" ]; then \
-        CHEZMOI_PROFILE="${CHEZMOI_PROFILE}" \
         chezmoi init --recurse-submodules=false --apply "${GITHUB_USER}"; \
     fi
 
+RUN sudo rm -f /etc/sudoers.d/${USERNAME}
 
-WORKDIR /home/${USER}
+WORKDIR /home/${USERNAME}
 
 CMD ["start-shell.sh"]
